@@ -1,0 +1,19 @@
+name: email-news
+region: fra1
+
+services:
+  - name: email-news
+    dockerfile_path: Dockerfile
+    source_dir: .
+    http_port: 8000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: IRTD/email-news
+    health_check:
+      http_path: /health
+
+    routes:
+      path: /
