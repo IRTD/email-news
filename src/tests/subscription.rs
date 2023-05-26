@@ -1,5 +1,6 @@
-use crate::tests::*;
 use crate::configuration::Settings;
+use crate::domain::Subscriber;
+use crate::tests::*;
 
 use sqlx::PgPool;
 
@@ -40,7 +41,7 @@ async fn subsribe_returns_400_when_data_missing() {
     let test_cases = vec![
         (NAME, "missing the email"),
         (EMAIL, "missing the name"),
-        ("", "missing both name and email")
+        ("", "missing both name and email"),
     ];
 
     for (invalid_body, error_message) in test_cases {
@@ -52,10 +53,29 @@ async fn subsribe_returns_400_when_data_missing() {
             .await
             .expect("Failed to execute request");
 
-        assert_eq!(
-            400,
-            response.status().as_u16(),
-            "{}", error_message
-        )
+        assert_eq!(400, response.status().as_u16(), "{}", error_message)
+    }
+}
+
+#[tokio::test]
+async fn subscribe_returns_a_200_when_fields_present_but_empty() {
+    let app = spawn_app().await;
+    let client = reqwest::Client::new();
+    let test_cases = vec![
+        ("name=&email=le_guin%40gmail.com", "empty name"),
+        ("name=le&email=", "empty email"),
+        ("name=Ursula&email=Not-An-Email", "Invalid Email"),
+    ];
+
+    for (body, descr) in test_cases {
+        let response = client
+            .post(format!("{}/subscriptions", &app.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request");
+
+        assert_eq!(200, response.status().as_u16(), "{}", descr)
     }
 }
