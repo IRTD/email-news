@@ -76,6 +76,6 @@ async fn subscribe_returns_a_200_when_fields_present_but_empty() {
             .await
             .expect("Failed to execute request");
 
-        assert_eq!(200, response.status().as_u16(), "{}", descr)
+        assert_eq!(400, response.status().as_u16(), "{}", descr)
     }
 }
