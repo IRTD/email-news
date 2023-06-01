@@ -1,4 +1,5 @@
 use email_news::configuration::Settings;
+use email_news::email::EmailClient;
 use email_news::startup::run;
 use email_news::telemetry::*;
 use sqlx::postgres::PgPoolOptions;
@@ -15,8 +16,18 @@ async fn main() -> Result<(), std::io::Error> {
 
     let addr = config.addr();
     let listener = TcpListener::bind(addr)?;
+    let sender_email = config
+        .email_client
+        .sender()
+        .expect("Failed to parse Email - Invalid Email");
 
-    run(listener, db_conn)?.await?;
+    let email_client = EmailClient::new(
+        sender_email,
+        config.email_client.base_url,
+        config.email_client.auth_token,
+    );
+
+    run(listener, db_conn, email_client)?.await?;
 
     Ok(())
 }
