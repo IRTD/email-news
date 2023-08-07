@@ -34,6 +34,7 @@ pub struct EmailClientSettings {
     pub base_url: String,
     pub sender_email: String,
     pub auth_token: Secret<String>,
+    pub timeout_ms: u64,
 }
 
 pub enum Environment {
@@ -117,5 +118,9 @@ impl DatabaseSettings {
 impl EmailClientSettings {
     pub fn sender(&self) -> Result<SubscriberEmail, ()> {
         SubscriberEmail::parse(self.sender_email.clone())
+    }
+
+    pub fn timeout(&self) -> std::time::Duration {
+        std::time::Duration::from_millis(self.timeout_ms)
     }
 }

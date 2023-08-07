@@ -25,6 +25,7 @@ async fn main() -> Result<(), std::io::Error> {
         sender_email,
         config.email_client.base_url,
         config.email_client.auth_token,
+        config.email_client.timeout(),
     );
 
     run(listener, db_conn, email_client)?.await?;

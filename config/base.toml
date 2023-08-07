@@ -12,3 +12,4 @@ database_name = "newsletter"
 base_url = "https://api.postmark.com"
 sender_email = "tacoblog@tacomail.me"
 auth_token = "a1b7825a-f464-4921-aaa4-e87082723225"
+timeout_ms = 10000
